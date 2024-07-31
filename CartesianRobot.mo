@@ -43,16 +43,24 @@ model CartesianRobot
     Placement(transformation(origin = {-96, 34}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Mechanics.Translational.Sensors.ForceSensor SourceMeasure annotation(
     Placement(transformation(origin = {116, 56}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
-  Modelica.Mechanics.Translational.Sources.ConstantForce constantForce(f_constant = 100) annotation(
-    Placement(transformation(origin = {-130, -32}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Mechanics.Translational.Components.ElastoGap StopMotion(c = 1e6, d = 100e3, s_rel0 = -2) annotation(
-    Placement(transformation(origin = {-130, -2}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
+    Placement(transformation(origin = {-128, 68}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
   Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor1(get_v = true, get_a = true, get_r = true) annotation(
     Placement(transformation(origin = {-42, 10}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor2(get_v = true, get_a = true, get_r = true) annotation(
     Placement(transformation(origin = {-30, 62}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor3(get_v = true, get_a = true, get_r = true) annotation(
     Placement(transformation(origin = {18, 10}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Blocks.Sources.Constant const[3](k = {100, 0, 0})  annotation(
+    Placement(transformation(origin = {-174, -24}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Forces.WorldForce force annotation(
+    Placement(transformation(origin = {-134, -24}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Sensors.AbsoluteVelocity absoluteVelocity annotation(
+    Placement(transformation(origin = {-58, -46}, extent = {{-10, -10}, {10, 10}})));
+  DragPackage.DragForce dragForce annotation(
+    Placement(transformation(origin = {-22, -46}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Forces.WorldForce force1 annotation(
+    Placement(transformation(origin = {10, -46}, extent = {{-10, -10}, {10, 10}})));
 equation
   connect(sine2.y, position2.s_ref) annotation(
     Line(points = {{89, 108}, {89.5, 108}, {89.5, 98}, {94, 98}}, color = {0, 0, 127}));
@@ -73,11 +81,9 @@ equation
   connect(position2.flange, SourceMeasure.flange_a) annotation(
     Line(points = {{116, 98}, {116, 66}}, color = {0, 127, 0}));
   connect(prismatic.support, StopMotion.flange_b) annotation(
-    Line(points = {{-134, 40}, {-144, 40}, {-144, -2}, {-140, -2}}, color = {0, 127, 0}));
+    Line(points = {{-134, 40}, {-138, 40}, {-138, 68}}, color = {0, 127, 0}));
   connect(prismatic.axis, StopMotion.flange_a) annotation(
-    Line(points = {{-122, 40}, {-114, 40}, {-114, -2}, {-120, -2}}, color = {0, 127, 0}));
-  connect(constantForce.flange, StopMotion.flange_a) annotation(
-    Line(points = {{-120, -32}, {-114, -32}, {-114, -2}, {-120, -2}}, color = {0, 127, 0}));
+    Line(points = {{-122, 40}, {-118, 40}, {-118, 68}}, color = {0, 127, 0}));
   connect(prismatic3.axis, SourceMeasure.flange_b) annotation(
     Line(points = {{116, 40}, {116, 46}}, color = {0, 127, 0}));
   connect(ForceMeasureThinBar.frame_b, ThinBar.frame_a) annotation(
@@ -114,6 +120,18 @@ equation
     Line(points = {{36, 90}, {8, 90}, {8, 34}}, color = {95, 95, 95}));
   connect(ThinBarRelativeToCube.frame_a, prismatic3.frame_b) annotation(
     Line(points = {{132, 4}, {126, 4}, {126, 34}, {118, 34}}, color = {95, 95, 95}));
+  connect(const.y, force.force) annotation(
+    Line(points = {{-162, -24}, {-146, -24}}, color = {0, 0, 127}));
+  connect(force.frame_b, prismatic.frame_b) annotation(
+    Line(points = {{-124, -24}, {-120, -24}, {-120, 34}}, color = {95, 95, 95}));
+  connect(absoluteVelocity.v, dragForce.u) annotation(
+    Line(points = {{-47, -46}, {-33, -46}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(dragForce.y, force1.force) annotation(
+    Line(points = {{-12, -46}, {-2, -46}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(force1.frame_b, middleBarUpper1m.frame_b) annotation(
+    Line(points = {{20, -46}, {24, -46}, {24, 34}, {8, 34}}, color = {95, 95, 95}));
+  connect(absoluteVelocity.frame_a, middleBarUpper1m.frame_b) annotation(
+    Line(points = {{-68, -46}, {-68, -12}, {-4, -12}, {-4, 34}, {8, 34}}, color = {95, 95, 95}));
   annotation(
     uses(Modelica(version = "4.0.0")),
     Diagram(coordinateSystem(extent = {{-240, 120}, {200, -60}})),
